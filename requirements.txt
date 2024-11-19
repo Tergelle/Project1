@@ -3,3 +3,4 @@ openpyxl
 xlrd
 fpdf
 streamlit
+plotly
