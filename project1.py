@@ -473,9 +473,9 @@ def show_analysis_page():
 }
 
                     
+                    st.subheader("Download PDF Report")
                     pdf_content = generate_pdf_report(ratio_groups)
                     show_pdf_download_button(pdf_content)
-
 
                     
                 except IndexError as ie:
