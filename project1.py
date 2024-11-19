@@ -145,7 +145,7 @@ def show_home_page():
 
 # Define a function to show the Financial Analysis Page
 def show_analysis_page():
-    st.title("Financial Analysis")
+    st.title("📈 Financial Analysis")
 
     # File upload for Financial Analysis page
     if "uploaded_file" not in st.session_state:
