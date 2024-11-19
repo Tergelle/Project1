@@ -149,21 +149,14 @@ def show_analysis_page():
     uploaded_file = st.file_uploader("Upload your Excel file (.xls or .xlsx)", type=["xls", "xlsx"])
 
     # If a new file is uploaded, store it in session state
-    if uploaded_file is not None:
+    if st.session_state.uploaded_file is not None:
+        st.write("File is available for analysis.")
         try:
-        # Check file extension
-            if uploaded_file.name.endswith('.xls'):
-            # Save the uploaded BytesIO to a temporary file
-                import tempfile
-                with tempfile.NamedTemporaryFile(delete=False, suffix=".xls") as tmp:
-                    tmp.write(uploaded_file.read())
-                    tmp_path = tmp.name
-            
-            # Load the file using Pandas and xlrd
-                excel_file = pd.ExcelFile(tmp_path, engine='xlrd')
+            # Determine the engine based on the file extension
+            if st.session_state.uploaded_file.name.endswith('.xls'):
+                excel_file = pd.ExcelFile(st.session_state.uploaded_file, engine='xlrd')
             else:
-            # Load .xlsx file directly
-                excel_file = pd.ExcelFile(uploaded_file, engine='openpyxl')
+                excel_file = pd.ExcelFile(st.session_state.uploaded_file, engine='openpyxl')
 
         # Load sheets for further calculations
             if "СБД" in excel_file.sheet_names and "ОДТ" in excel_file.sheet_names:
