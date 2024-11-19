@@ -1,5 +1,5 @@
-streamlit
 pandas
-plotly
-fpdf
+openpyxl
 xlrd
+fpdf
+streamlit
