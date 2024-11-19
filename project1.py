@@ -166,7 +166,7 @@ def show_analysis_page():
                 excel_file = pd.ExcelFile(uploaded_file, engine='openpyxl')
 
         # Load sheets for further calculations
-           if "СБД" in excel_file.sheet_names and "ОДТ" in excel_file.sheet_names:
+            if "СБД" in excel_file.sheet_names and "ОДТ" in excel_file.sheet_names:
                 balance_sheet_df = pd.read_excel(excel_file, sheet_name="СБД", skiprows=4)
                 income_statement_df = pd.read_excel(excel_file, sheet_name="ОДТ", skiprows=4)
                 retained_earning_df = pd.read_excel(excel_file, sheet_name="ӨӨТ", skiprows=4)
