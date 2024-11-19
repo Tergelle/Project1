@@ -3,6 +3,8 @@ import pandas as pd
 import plotly.graph_objects as go
 import io
 from fpdf import FPDF
+import tempfile
+import os
 
 
 # Function to visualize Altman Z-Score using a Gauge Chart
@@ -37,7 +39,8 @@ def visualize_altman_z_score(z_score):
     st.plotly_chart(fig)
     
 # PDF    
-def generate_pdf_report(ratio_groups):
+def generate_pdf_report_to_file(ratio_groups):
+    temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
     pdf = FPDF()
     pdf.add_page()
     pdf.set_auto_page_break(auto=True, margin=15)
@@ -60,21 +63,25 @@ def generate_pdf_report(ratio_groups):
         pdf.ln(5)
 
     # Save the PDF to a file-like object
-    pdf_output = io.BytesIO()
-    pdf.output(pdf_output)
-    pdf_output.seek(0)
+    pdf.output(temp_file.name)
+    temp_file.close()
 
-    return pdf_output
+    return temp_file.name
 
 # Display the download button
-def show_pdf_download_button(pdf_content):
-    st.download_button(
-        label="📄 Download PDF Report",
-        data=pdf_content,
-        file_name="financial_ratios_report.pdf",
-        mime="application/pdf",
-        help="Click to download the financial analysis report."
-    )
+def show_pdf_download_button_with_file(pdf_file_path):
+    with open(pdf_file_path, "rb") as file:
+        pdf_content = file.read()
+        
+        st.download_button(
+            label="📄 Download PDF Report",
+            data=pdf_content,
+            file_name="financial_ratios_report.pdf",
+            mime="application/pdf",
+            help="Click to download the financial analysis report."
+        )
+
+        os.unlink(pdf_file_path)
 
 
 # Check if "page" exists in the session state
@@ -478,8 +485,8 @@ def show_analysis_page():
 
                     
                     
-                    pdf_content = generate_pdf_report(ratio_groups)
-                    show_pdf_download_button(pdf_content)
+                    pdf_file_path = generate_pdf_report_to_file(ratio_groups)
+                    show_pdf_download_button_with_file(pdf_file_path)
 
 
                     
