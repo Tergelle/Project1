@@ -150,26 +150,30 @@ def show_analysis_page():
 
     # If a new file is uploaded, store it in session state
     if uploaded_file is not None:
-        st.session_state.uploaded_file = uploaded_file
-        st.success("File uploaded successfully!")
+    try:
+        # Check file extension
+        if uploaded_file.name.endswith('.xls'):
+            # Save the uploaded BytesIO to a temporary file
+            import tempfile
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".xls") as tmp:
+                tmp.write(uploaded_file.read())
+                tmp_path = tmp.name
+            
+            # Load the file using Pandas and xlrd
+            excel_file = pd.ExcelFile(tmp_path, engine='xlrd')
+        else:
+            # Load .xlsx file directly
+            excel_file = pd.ExcelFile(uploaded_file, engine='openpyxl')
+        
+        # Process the Excel file
+        st.write("Available Sheets:", excel_file.sheet_names)
 
-    # Use the uploaded file from session state
-    if st.session_state.uploaded_file is not None:
-        st.write("File is available for analysis.")
-        try:
-            # Determine the engine based on the file extension
-            if st.session_state.uploaded_file.name.endswith('.xls'):
-                excel_file = pd.ExcelFile(st.session_state.uploaded_file, engine='xlrd')
-            else:
-                excel_file = pd.ExcelFile(st.session_state.uploaded_file, engine='openpyxl')
-
-           
-            # Load the sheets
-            if "СБД" in excel_file.sheet_names and "ОДТ" in excel_file.sheet_names:
-                balance_sheet_df = pd.read_excel(excel_file, sheet_name="СБД", skiprows=4)
-                income_statement_df = pd.read_excel(excel_file, sheet_name="ОДТ", skiprows=4)
-                retained_earning_df = pd.read_excel(excel_file, sheet_name="ӨӨТ", skiprows=4)
-                cashflow_statement_df = pd.read_excel(excel_file, sheet_name="МГТ", skiprows=4)
+        # Load sheets for further calculations
+        if "СБД" in excel_file.sheet_names and "ОДТ" in excel_file.sheet_names:
+            balance_sheet_df = pd.read_excel(excel_file, sheet_name="СБД", skiprows=4)
+            income_statement_df = pd.read_excel(excel_file, sheet_name="ОДТ", skiprows=4)
+            retained_earning_df = pd.read_excel(excel_file, sheet_name="ӨӨТ", skiprows=4)
+            cashflow_statement_df = pd.read_excel(excel_file, sheet_name="МГТ", skiprows=4)
 
                 # Drop empty columns
                 balance_sheet_df.dropna(axis=1, how='all', inplace=True)
