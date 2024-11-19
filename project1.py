@@ -149,7 +149,7 @@ def show_analysis_page():
     uploaded_file = st.file_uploader("Upload your Excel file (.xls or .xlsx)", type=["xls", "xlsx"])
 
     # If a new file is uploaded, store it in session state
-     if uploaded_file is not None:
+    if uploaded_file is not None:
         try:
         # Check file extension
             if uploaded_file.name.endswith('.xls'):
