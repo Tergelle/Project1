@@ -231,6 +231,7 @@ elif page == "📊 Financial Analysis":
     
 elif page == "📋 Financial Report":
     st.session_state.page = "Financial Report"
+    
 elif page == "📈 MSE Trade Data":
     st.session_state.page = "Trade Data"
 
