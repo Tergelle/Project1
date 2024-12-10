@@ -5,8 +5,8 @@ import io
 from fpdf import FPDF
 import tempfile
 import os
-# import requests
-# from bs4 import BeautifulSoup
+import requests
+from bs4 import BeautifulSoup
 
 # Function to visualize Altman Z-Score using a Gauge Chart
 def visualize_altman_z_score(z_score, max_range=5):
@@ -1339,49 +1339,49 @@ def get_companies_and_urls():
 
 
 
-# def get_company_info(company_url):
-#     headers = {
-#         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-#     }
-#     response = requests.get(company_url, headers=headers)
-#     response.raise_for_status()
-#     soup = BeautifulSoup(response.text, "html.parser")
-#     #Parse company-specific details
-#     details_container = soup.find("div", class_="col-lg-6 col-md-6")
-#     data = {}
-#     if details_container:
-#         list_items = details_container.find_all("li")
-#         for item in list_items:
-#             key = item.contents[0].strip()
-#             value_tag = item.find("b")
-#             value = value_tag.text.strip() if value_tag else "N/A"
-#             data[key] = value
-#     else:
-#         data["Error"] = "No data found in the specified container."
-#     return data
+def get_company_info(company_url):
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    }
+    response = requests.get(company_url, headers=headers)
+    response.raise_for_status()
+    soup = BeautifulSoup(response.text, "html.parser")
+    #Parse company-specific details
+    details_container = soup.find("div", class_="col-lg-6 col-md-6")
+    data = {}
+    if details_container:
+        list_items = details_container.find_all("li")
+        for item in list_items:
+            key = item.contents[0].strip()
+            value_tag = item.find("b")
+            value = value_tag.text.strip() if value_tag else "N/A"
+            data[key] = value
+    else:
+        data["Error"] = "No data found in the specified container."
+    return data
 
-# def show_trade_page():
-#     st.title("MSE Company Trade Data")
+def show_trade_page():
+    st.title("MSE Company Trade Data")
 
-#     # Get companies
-#     with st.spinner("Fetching company list..."):
-#         companies = get_companies_and_urls()
+    # Get companies
+    with st.spinner("Fetching company list..."):
+        companies = get_companies_and_urls()
 
-#     # Dropdown menu
-#     selected_company = st.selectbox("Select a company", list(companies.keys()))
+    # Dropdown menu
+    selected_company = st.selectbox("Select a company", list(companies.keys()))
 
-#     if selected_company:
-#         # Fetch and display company info
-#         company_url = companies[selected_company]
-#         with st.spinner(f"Loading data for {selected_company}..."):
-#             company_info = get_company_info(company_url)
+    if selected_company:
+        # Fetch and display company info
+        company_url = companies[selected_company]
+        with st.spinner(f"Loading data for {selected_company}..."):
+            company_info = get_company_info(company_url)
 
-#         st.subheader(f"Details for {selected_company}")
-#         if company_info:
-#             for key, value in company_info.items():
-#                 st.write(f"**{key}:** {value}")
-#         else:
-#             st.warning("No data found for the selected company.")
+        st.subheader(f"Details for {selected_company}")
+        if company_info:
+            for key, value in company_info.items():
+                st.write(f"**{key}:** {value}")
+        else:
+            st.warning("No data found for the selected company.")
 
 
         
@@ -1393,6 +1393,6 @@ elif st.session_state.page == "Financial Analysis":
     show_analysis_page()
 elif st.session_state.page == "Financial Report":
     show_report_page()
-# elif st.session_state.page == "Trade Data":
-#     show_trade_page()
+elif st.session_state.page == "Trade Data":
+    show_trade_page()
         
