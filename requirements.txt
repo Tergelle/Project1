@@ -1,8 +1,8 @@
 pandas
 openpyxl
-xlrd
 fpdf
 streamlit
 plotly
 beautifulsoup4
 requests
+xlrd
