@@ -4,4 +4,5 @@ xlrd
 fpdf
 streamlit
 plotly
-
+BeautifulSoup
+requests
