@@ -1338,6 +1338,7 @@ def get_companies_and_urls():
     return companies
 
 
+
 def get_company_info(company_url):
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
@@ -1345,8 +1346,7 @@ def get_company_info(company_url):
     response = requests.get(company_url, headers=headers)
     response.raise_for_status()
     soup = BeautifulSoup(response.text, "html.parser")
-
-    # Parse company-specific details
+    #Parse company-specific details
     details_container = soup.find("div", class_="col-lg-6 col-md-6")
     data = {}
     if details_container:
