@@ -5,6 +5,9 @@ import io
 from fpdf import FPDF
 import tempfile
 import os
+import requests
+from bs4 import BeautifulSoup
+
 
 
 # Function to visualize Altman Z-Score using a Gauge Chart
@@ -228,6 +231,9 @@ elif page == "📊 Financial Analysis":
     
 elif page == "📋 Financial Report":
     st.session_state.page = "Financial Report"
+elif page == "📈 MSE Trade Data":
+    st.session_state.page = "Trade Data"
+
     
 def show_home_page():
     st.title("📊 Financial Analysis App")
@@ -1324,13 +1330,79 @@ def show_report_page():
             
         st.subheader("Piotroski F-Score")
         st.write(f"{f_score_comment}")
-            
-        # except Exception as e:
-        #              st.error(f"An error occurred while processing the report: {e}")
 
-                             
+def get_companies_and_urls():
+    base_url = "https://mse.mn"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    }
+    response = requests.get(base_url, headers=headers)
+    response.raise_for_status()
+    soup = BeautifulSoup(response.text, "html.parser")
 
-                
+    # Find the dropdown for companies
+    dropdown = soup.find("select", class_="selectpicker")
+    companies = {}
+    if dropdown:
+        options = dropdown.find_all("option")
+        for option in options:
+            company_name = option.text.strip()
+            company_id = option.get("value")
+            # Skip invalid or empty values
+            if company_id and company_id.isdigit() and int(company_id) > 0:
+                company_url = f"{base_url}/mn/company/{company_id}"  # Build full URL
+                companies[company_name] = company_url
+    return companies
+
+
+def get_company_info(company_url):
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+    }
+    response = requests.get(company_url, headers=headers)
+    response.raise_for_status()
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    # Parse company-specific details
+    details_container = soup.find("div", class_="col-lg-6 col-md-6")
+    data = {}
+    if details_container:
+        list_items = details_container.find_all("li")
+        for item in list_items:
+            key = item.contents[0].strip()
+            value_tag = item.find("b")
+            value = value_tag.text.strip() if value_tag else "N/A"
+            data[key] = value
+    else:
+        data["Error"] = "No data found in the specified container."
+    return data
+
+def show_trade_page():
+    st.title("MSE Company Trade Data")
+
+    # Get companies
+    with st.spinner("Fetching company list..."):
+        companies = get_companies_and_urls()
+
+    # Dropdown menu
+    selected_company = st.selectbox("Select a company", list(companies.keys()))
+
+    if selected_company:
+        # Fetch and display company info
+        company_url = companies[selected_company]
+        with st.spinner(f"Loading data for {selected_company}..."):
+            company_info = get_company_info(company_url)
+
+        st.subheader(f"Details for {selected_company}")
+        if company_info:
+            for key, value in company_info.items():
+                st.write(f"**{key}:** {value}")
+        else:
+            st.warning("No data found for the selected company.")
+
+
+        
+                     
 # Navigation logic
 if st.session_state.page == "Home":
     show_home_page()
@@ -1338,4 +1410,12 @@ elif st.session_state.page == "Financial Analysis":
     show_analysis_page()
 elif st.session_state.page == "Financial Report":
     show_report_page()
+elif st.session_state.page == "Trade Data":
+    show_trade_page()
         
+            
+       
+                             
+
+                
+
