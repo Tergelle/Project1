@@ -5,8 +5,8 @@ import io
 from fpdf import FPDF
 import tempfile
 import os
-import requests
-from bs4 import BeautifulSoup
+# import requests
+# from bs4 import BeautifulSoup
 
 # Function to visualize Altman Z-Score using a Gauge Chart
 def visualize_altman_z_score(z_score, max_range=5):
